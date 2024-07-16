@@ -1,0 +1,10 @@
+Host *
+    StrictHostKeyChecking no
+    IdentityFile ~/.ssh/id_ed25519
+
+Host jump-host
+    HostName 172.28.3.74
+    User ubuntu
+
+Host 10.*
+    ProxyJump jump-host

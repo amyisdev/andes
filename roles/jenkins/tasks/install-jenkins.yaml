@@ -87,13 +87,13 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/jenkins.conf"
     dest: /etc/jenkins/jenkins.conf
-    mode: "0755"
+    mode: "0644"
 
 - name: Create systemd unit for Jenkins
   ansible.builtin.template:
     src: "{{ role_path }}/templates/jenkins.service"
     dest: /etc/systemd/system/jenkins.service
-    mode: "0755"
+    mode: "0644"
 
 - name: Reload systemd services
   ansible.builtin.systemd_service:

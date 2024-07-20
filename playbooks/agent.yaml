@@ -20,6 +20,10 @@
   vars:
     java_version: 11
     jenkins_agent_authorized_key: "{{ hostvars['jenkins-controller'].controller_public_key.stdout }}"
+    docker_user: jenkins
   roles:
-    - java
-    - jenkins_agent
+    # - common
+    # - java
+    # - jenkins_agent
+    # - gitops
+    - docker

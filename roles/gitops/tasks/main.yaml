@@ -1,0 +1,7 @@
+---
+- name: Setup jenkins agent for gitops
+  ansible.builtin.import_tasks: setup-for-gitops.yaml
+
+- name: Remove gitops setup
+  ansible.builtin.import_tasks: remove-gitops.yaml
+  tags: never, remove

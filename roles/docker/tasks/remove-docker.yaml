@@ -1,0 +1,26 @@
+---
+- name: Remove docker group
+  ansible.builtin.group:
+    name: "{{ docker_group }}"
+    state: absent
+
+- name: Remove docker
+  ansible.builtin.apt:
+    pkg: "{{ docker_packages }}"
+    state: absent
+
+- name: Remove docker key & repository
+  ansible.builtin.deb822_repository:
+    name: docker
+    architectures:
+      - amd64
+    types:
+      - deb
+    uris: https://download.docker.com/linux/ubuntu
+    signed_by: https://download.docker.com/linux/ubuntu/gpg
+    suites:
+      - "{{ ansible_distribution_release }}"
+    components:
+      - stable
+    enabled: true
+    state: absent

@@ -1,0 +1,52 @@
+---
+- name: Ensure unofficial versions of docker are not installed.
+  ansible.builtin.package:
+    name:
+      - docker.io
+      - docker-compose
+      - docker-compose-v2
+      - docker-doc
+      - podman-docker
+      - containerd
+      - runc
+    state: absent
+
+- name: Add docker key & repository
+  ansible.builtin.deb822_repository:
+    name: docker
+    architectures:
+      - amd64
+    types:
+      - deb
+    uris: https://download.docker.com/linux/ubuntu
+    signed_by: https://download.docker.com/linux/ubuntu/gpg
+    suites:
+      - "{{ ansible_distribution_release }}"
+    components:
+      - stable
+    enabled: true
+
+- name: Install docker
+  ansible.builtin.apt:
+    pkg: "{{ docker_packages }}"
+    update_cache: true
+  notify: Restart docker
+
+- name: Ensure docker is started and enabled at boot
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Create docker group
+  ansible.builtin.group:
+    name: "{{ docker_group }}"
+    state: present
+
+- name: Assign docker group to user
+  ansible.builtin.user:
+    name: "{{ docker_user }}"
+    groups: "{{ docker_group }}"
+    shell: "/bin/bash"
+    append: true
+    state: present

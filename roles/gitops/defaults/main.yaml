@@ -1,0 +1,15 @@
+gitops_tmp_dir: "/tmp"
+
+gitops_vault_version: "1.12.2"
+gitops_vault_package: "vault_{{ gitops_vault_version }}_linux_amd64.zip"
+gitops_vault_download_url: "https://releases.hashicorp.com/vault/{{ gitops_vault_version }}/{{ gitops_vault_package }}"
+gitops_vault_checksum_url: "https://releases.hashicorp.com/vault/{{ gitops_vault_version }}/vault_{{ gitops_vault_version }}_SHA256SUMS"
+
+gitops_helm_version: "3.9.3"
+gitops_helm_package: "helm-v{{ gitops_helm_version }}-linux-amd64.tar.gz"
+gitops_helm_download_url: "https://get.helm.sh/{{ gitops_helm_package }}"
+gitops_helm_checksum_url: "{{ gitops_helm_download_url }}.sha256sum"
+
+gitops_kubectl_version: "1.17.16"
+gitops_kubectl_download_url: "https://dl.k8s.io/release/v{{ gitops_kubectl_version }}/bin/linux/amd64/kubectl"
+gitops_kubectl_checksum_url: "{{ gitops_kubectl_download_url }}.sha256"

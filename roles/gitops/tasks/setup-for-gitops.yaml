@@ -1,0 +1,60 @@
+---
+- name: Ensure tmp dir exists
+  ansible.builtin.file:
+    path: "{{ gitops_tmp_dir }}"
+    state: directory
+    mode: "0777"
+
+# Install Helm
+# Helm archive contains a dir called linux-amd64
+- name: Download Helm package
+  ansible.builtin.get_url:
+    url: "{{ gitops_helm_download_url }}"
+    dest: "{{ gitops_tmp_dir }}/{{ gitops_helm_package }}"
+    checksum: "sha256:{{ gitops_helm_checksum_url }}"
+    mode: "0600"
+
+- name: Extract Helm
+  ansible.builtin.unarchive:
+    src: "{{ gitops_tmp_dir }}/{{ gitops_helm_package }}"
+    dest: "{{ gitops_tmp_dir }}"
+    remote_src: true
+
+- name: Install Helm
+  ansible.builtin.copy:
+    src: "{{ gitops_tmp_dir }}/linux-amd64/helm"
+    dest: /usr/local/bin
+    remote_src: true
+    mode: "0755"
+
+# Install Kubectl
+# Kubectl is a binary
+- name: Download Kubectl package
+  ansible.builtin.get_url:
+    url: "{{ gitops_kubectl_download_url }}"
+    dest: "{{ gitops_tmp_dir }}/kubectl"
+    checksum: "sha256:{{ gitops_kubectl_checksum_url }}"
+    mode: "0600"
+
+- name: Install Kubectl
+  ansible.builtin.copy:
+    src: "{{ gitops_tmp_dir }}/kubectl"
+    dest: /usr/local/bin
+    remote_src: true
+    mode: "0755"
+
+# Install Vault
+# The archive only contains vault binary
+- name: Download Vault package
+  ansible.builtin.get_url:
+    url: "{{ gitops_vault_download_url }}"
+    dest: "{{ gitops_tmp_dir }}/{{ gitops_vault_package }}"
+    checksum: "sha256:{{ gitops_vault_checksum_url }}"
+    mode: "0600"
+
+- name: Install Vault
+  ansible.builtin.unarchive:
+    src: "{{ gitops_tmp_dir }}/{{ gitops_vault_package }}"
+    dest: /usr/local/bin
+    remote_src: true
+    mode: "0755"

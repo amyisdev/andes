@@ -1,0 +1,7 @@
+---
+- name: Install docker
+  ansible.builtin.include_tasks: "install-docker.yaml"
+
+- name: Remove docker
+  ansible.builtin.import_tasks: remove-docker.yaml
+  tags: never, remove

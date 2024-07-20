@@ -1,12 +1,4 @@
 ---
-- name: Ensure jenkins home dir exists
-  ansible.builtin.file:
-    path: "{{ jenkins_home }}"
-    state: directory
-    mode: "0755"
-    owner: "{{ jenkins_user }}"
-    group: "{{ jenkins_user }}"
-
 - name: Ensure jenkins group exists
   ansible.builtin.group:
     name: "{{ jenkins_user }}"

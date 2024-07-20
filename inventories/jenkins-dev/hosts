@@ -1,1 +1,4 @@
 jenkins-controller ansible_host=10.243.54.190
+
+[jenkins_agent]
+jenkins-agent-docker ansible_host=10.243.54.91

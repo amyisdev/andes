@@ -1,0 +1,7 @@
+---
+- name: Setup Jenkins Agent
+  ansible.builtin.import_tasks: setup-agent.yaml
+
+- name: Remove Jenkins Agent
+  ansible.builtin.import_tasks: remove-agent.yaml
+  tags: never, remove

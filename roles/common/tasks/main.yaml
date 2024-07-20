@@ -8,8 +8,11 @@
       - ca-certificates
       - curl
       - git
+      - gnupg
+      - gzip
       - net-tools
       - openssh-client
+      - tar
       - tzdata
       - unzip
       - wget

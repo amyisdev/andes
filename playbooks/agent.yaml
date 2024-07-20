@@ -1,0 +1,25 @@
+---
+- name: Retrieve controller public key
+  hosts: jenkins-controller
+  become: true
+  vars:
+    jenkins_home: /var/lib/jenkins
+  tasks:
+    - name: Retrieve public key
+      ansible.builtin.command: "cat {{ jenkins_home }}/.ssh/id_rsa.pub"
+      register: controller_public_key
+      changed_when: false
+    - name: Debug key
+      ansible.builtin.debug:
+        var: hostvars['jenkins-controller'].controller_public_key.stdout
+        verbosity: 1
+
+- name: Setup Jenkins Agent
+  hosts: jenkins_agent
+  become: true
+  vars:
+    java_version: 11
+    jenkins_agent_authorized_key: "{{ hostvars['jenkins-controller'].controller_public_key.stdout }}"
+  roles:
+    - java
+    - jenkins_agent

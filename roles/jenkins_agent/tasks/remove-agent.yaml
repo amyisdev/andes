@@ -1,0 +1,15 @@
+---
+- name: Remove jenkins home
+  ansible.builtin.file:
+    path: "{{ jenkins_agent_home }}"
+    state: absent
+
+- name: Remove jenkins user
+  ansible.builtin.user:
+    name: "{{ jenkins_agent_user }}"
+    state: absent
+
+- name: Remove jenkins group
+  ansible.builtin.group:
+    name: "{{ jenkins_agent_user }}"
+    state: absent

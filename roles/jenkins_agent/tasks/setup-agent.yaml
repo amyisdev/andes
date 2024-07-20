@@ -1,0 +1,32 @@
+---
+- name: Ensure jenkins group exists
+  ansible.builtin.group:
+    name: "{{ jenkins_agent_user }}"
+
+- name: Ensure jenkins user exists
+  ansible.builtin.user:
+    name: "{{ jenkins_agent_user }}"
+    home: "{{ jenkins_agent_home }}"
+    shell: /bin/bash
+    group: "{{ jenkins_agent_user }}"
+
+- name: Ensure jenkins tools dir exists
+  ansible.builtin.file:
+    path: "{{ jenkins_agent_home }}/tools"
+    state: directory
+    mode: "0755"
+    owner: "{{ jenkins_agent_user }}"
+    group: "{{ jenkins_agent_user }}"
+
+- name: Ensure .ssh dir exists
+  ansible.builtin.file:
+    path: "{{ jenkins_agent_home }}/.ssh"
+    state: directory
+    mode: "0700"
+    owner: "{{ jenkins_agent_user }}"
+    group: "{{ jenkins_agent_user }}"
+
+- name: Set authorized keys taken from url
+  ansible.posix.authorized_key:
+    user: jenkins
+    key: "{{ jenkins_agent_authorized_key }}"

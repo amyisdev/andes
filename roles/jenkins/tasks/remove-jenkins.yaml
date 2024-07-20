@@ -19,16 +19,6 @@
     path: /etc/jenkins
     state: absent
 
-- name: Remove env variables
-  ansible.builtin.blockinfile:
-    path: "{{ jenkins_home }}/.bashrc"
-    state: absent
-    block: |
-      export JENKINS_UC=https://updates.jenkins.io
-      export JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental
-      export JENKINS_SLAVE_AGENT_PORT=50000
-      export JENKINS_HOME=/var/lib/jenkins
-
 - name: Remove jenkins systemd unit
   ansible.builtin.file:
     path: /etc/systemd/system/jenkins.service

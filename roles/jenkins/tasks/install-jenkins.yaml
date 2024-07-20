@@ -1,0 +1,108 @@
+---
+- name: Ensure jenkins home dir exists
+  ansible.builtin.file:
+    path: "{{ jenkins_home }}"
+    state: directory
+    mode: "0755"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_user }}"
+
+- name: Ensure jenkins group exists
+  ansible.builtin.group:
+    name: "{{ jenkins_user }}"
+
+- name: Ensure jenkins user exists
+  ansible.builtin.user:
+    name: "{{ jenkins_user }}"
+    home: "{{ jenkins_home }}"
+    shell: /bin/bash
+    group: "{{ jenkins_user }}"
+
+- name: Ensure .ssh dir exists
+  ansible.builtin.file:
+    path: "{{ jenkins_home }}/.ssh"
+    state: directory
+    mode: "0755"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_user }}"
+
+- name: Generate ssh keypair
+  community.crypto.openssh_keypair:
+    path: "{{ jenkins_home }}/.ssh/id_rsa"
+    mode: "0600"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_user }}"
+
+- name: Ensure jenkins war dir exists
+  ansible.builtin.file:
+    path: "{{ jenkins_home }}/war"
+    state: directory
+    mode: "0755"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_user }}"
+
+- name: Setup env variables
+  ansible.builtin.blockinfile:
+    path: "{{ jenkins_home }}/.bashrc"
+    create: true
+    mode: "0644"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_user }}"
+    block: |
+      export JENKINS_UC=https://updates.jenkins.io
+      export JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental
+      export JENKINS_SLAVE_AGENT_PORT=50000
+      export JENKINS_HOME={{ jenkins_home }}
+
+- name: Ensure jenkins installation dir exists
+  ansible.builtin.file:
+    path: /usr/share/jenkins
+    state: directory
+    mode: "0755"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_user }}"
+
+- name: Ensure jenkins init.groovy.d dir exists
+  ansible.builtin.file:
+    path: /usr/share/jenkins/ref/init.groovy.d
+    state: directory
+    mode: "0755"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_user }}"
+
+- name: Ensure jenkins conf dir exists
+  ansible.builtin.file:
+    path: /etc/jenkins
+    state: directory
+    mode: "0755"
+
+- name: Download jenkins.war
+  ansible.builtin.get_url:
+    url: "https://get.jenkins.io/war-stable/{{ jenkins_version }}/jenkins.war"
+    dest: /usr/share/jenkins/jenkins.war
+    checksum: "sha256:https://get.jenkins.io/war-stable/{{ jenkins_version }}/jenkins.war.sha256"
+    mode: "0755"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_user }}"
+
+- name: Copy tcp-agent-port file
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/tcp-agent-port.groovy"
+    dest: /usr/share/jenkins/ref/init.groovy.d/tcp-agent-port.groovy
+    mode: "0755"
+
+- name: Create conf for Jenkins
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/jenkins.conf"
+    dest: /etc/jenkins/jenkins.conf
+    mode: "0755"
+
+- name: Create systemd unit for Jenkins
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/jenkins.service"
+    dest: /etc/systemd/system/jenkins.service
+    mode: "0755"
+
+- name: Reload systemd services
+  ansible.builtin.systemd_service:
+    daemon_reload: true

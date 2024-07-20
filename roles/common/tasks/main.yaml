@@ -1,0 +1,16 @@
+---
+- name: Install packages
+  ansible.builtin.apt:
+    update_cache: true
+    pkg:
+      - apt-transport-https
+      - bzip2
+      - ca-certificates
+      - curl
+      - git
+      - net-tools
+      - openssh-client
+      - tzdata
+      - unzip
+      - wget
+      - xz-utils

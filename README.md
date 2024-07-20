@@ -16,10 +16,10 @@ An opiniated Playbook to install Jenkins.
 
 ## Usage
 
-Simply run `ansible-playbook playbook/<playbook>.yaml` to provision configuration.
+Simply run `ansible-playbook playbook/<playbook>.yaml` to provision and `ansible-playbook playbook/<playbook>.yaml --tags=remove` to remove configuration.
 
 ## Misc
 
 ### Manual configurations
 
-After a VM is provisioned, we still need to add a public key to authorized_keys for each VMs. We should find a way to automate it.
+After a VM is provisioned, we still need to manually add public key to the VM & setup lxc. We should find a way to automate it.

@@ -1,0 +1,8 @@
+---
+- name: Setup Jenkins
+  hosts: jenkins_controller
+  become: true
+  vars:
+    java_version: 11
+  roles:
+    - jenkins

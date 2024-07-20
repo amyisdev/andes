@@ -1,0 +1,49 @@
+---
+- name: Stop jenkins service
+  ansible.builtin.systemd_service:
+    name: jenkins
+    state: stopped
+
+- name: Remove jenkins home
+  ansible.builtin.file:
+    path: "{{ jenkins_home }}"
+    state: absent
+
+- name: Remove jenkins installation dir
+  ansible.builtin.file:
+    path: /usr/share/jenkins
+    state: absent
+
+- name: Remove jenkins conf dir
+  ansible.builtin.file:
+    path: /etc/jenkins
+    state: absent
+
+- name: Remove env variables
+  ansible.builtin.blockinfile:
+    path: "{{ jenkins_home }}/.bashrc"
+    state: absent
+    block: |
+      export JENKINS_UC=https://updates.jenkins.io
+      export JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental
+      export JENKINS_SLAVE_AGENT_PORT=50000
+      export JENKINS_HOME=/var/lib/jenkins
+
+- name: Remove jenkins systemd unit
+  ansible.builtin.file:
+    path: /etc/systemd/system/jenkins.service
+    state: absent
+
+- name: Reload systemd services
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+
+- name: Remove jenkins user
+  ansible.builtin.user:
+    name: "{{ jenkins_user }}"
+    state: absent
+
+- name: Remove jenkins group
+  ansible.builtin.group:
+    name: "{{ jenkins_user }}"
+    state: absent

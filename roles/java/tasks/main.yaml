@@ -1,0 +1,7 @@
+---
+- name: Install Java
+  ansible.builtin.import_tasks: install-java.yaml
+
+- name: Remove Java
+  ansible.builtin.import_tasks: remove-java.yaml
+  tags: never, remove

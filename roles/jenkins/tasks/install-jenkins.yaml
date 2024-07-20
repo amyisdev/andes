@@ -22,7 +22,7 @@
   ansible.builtin.file:
     path: "{{ jenkins_home }}/.ssh"
     state: directory
-    mode: "0755"
+    mode: "0700"
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_user }}"
 

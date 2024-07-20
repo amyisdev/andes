@@ -1,2 +1,2 @@
 ansible_user: ubuntu
-ansible_ssh_common_args: '-F ./inventories/jenkins-dev/ssh_config'
+ansible_ssh_common_args: "-F ./inventories/jenkins-dev/ssh_config"

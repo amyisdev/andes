@@ -1,4 +1,9 @@
 ---
+- name: Check mandatory variables are defined
+  ansible.builtin.assert:
+    that:
+      - jenkins_agent_controller_public_key is defined
+
 - name: Ensure jenkins group exists
   ansible.builtin.group:
     name: "{{ jenkins_agent_user }}"
@@ -26,7 +31,7 @@
     owner: "{{ jenkins_agent_user }}"
     group: "{{ jenkins_agent_user }}"
 
-- name: Set authorized keys taken from url
+- name: Add controller public key to authorized key
   ansible.posix.authorized_key:
-    user: jenkins
-    key: "{{ jenkins_agent_authorized_key }}"
+    user: "{{ jenkins_agent_user }}"
+    key: "{{ jenkins_agent_controller_public_key }}"

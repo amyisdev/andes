@@ -1,9 +1,10 @@
 ---
 - name: Setup Jenkins
-  hosts: jenkins-controller
+  hosts: controller
   become: true
   vars:
     java_version: 11
   roles:
+    - common
     - java
     - jenkins

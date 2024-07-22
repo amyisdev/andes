@@ -1,4 +1,9 @@
 ---
+- name: Create docker group
+  ansible.builtin.group:
+    name: "{{ docker_group }}"
+    state: present
+
 - name: Ensure unofficial versions of docker are not installed.
   ansible.builtin.package:
     name:
@@ -37,11 +42,6 @@
     name: docker
     state: started
     enabled: true
-
-- name: Create docker group
-  ansible.builtin.group:
-    name: "{{ docker_group }}"
-    state: present
 
 - name: Assign docker group to user
   ansible.builtin.user:

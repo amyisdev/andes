@@ -1,6 +1,6 @@
 ---
 - name: Retrieve controller public key
-  hosts: jenkins-controller
+  hosts: controller
   become: true
   vars:
     jenkins_home: /var/lib/jenkins
@@ -11,7 +11,7 @@
       changed_when: false
     - name: Debug key
       ansible.builtin.debug:
-        var: hostvars['jenkins-controller'].controller_public_key.stdout
+        var: hostvars['controller'].controller_public_key.stdout
         verbosity: 1
 
 - name: Setup Jenkins Agent
@@ -19,11 +19,11 @@
   become: true
   vars:
     java_version: 11
-    jenkins_agent_authorized_key: "{{ hostvars['jenkins-controller'].controller_public_key.stdout }}"
+    jenkins_agent_controller_public_key: "{{ hostvars['controller'].controller_public_key.stdout }}"
     docker_user: jenkins
   roles:
-    # - common
-    # - java
-    # - jenkins_agent
-    # - gitops
+    - common
+    - java
+    - jenkins_agent
+    - gitops
     - docker

@@ -43,6 +43,27 @@
     remote_src: true
     mode: "0755"
 
+# Install Openshift
+# Openshift CLI archive contains a dir with the same name as the package
+- name: Download Openshift CLI package
+  ansible.builtin.get_url:
+    url: "{{ gitops_openshift_download_url }}"
+    dest: "{{ gitops_tmp_dir }}/{{ gitops_openshift_package }}"
+    mode: "0600"
+
+- name: Extract Openshift CLI
+  ansible.builtin.unarchive:
+    src: "{{ gitops_tmp_dir }}/{{ gitops_openshift_package }}"
+    dest: "{{ gitops_tmp_dir }}"
+    remote_src: true
+
+- name: Install Openshift CLI
+  ansible.builtin.copy:
+    src: "{{ gitops_tmp_dir }}/{{ gitops_openshift_dir }}/oc"
+    dest: /usr/local/bin
+    remote_src: true
+    mode: "0755"
+
 # Install Vault
 # The archive only contains vault binary
 - name: Download Vault package

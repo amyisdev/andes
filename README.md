@@ -1,6 +1,6 @@
-# Jenkins Ansible
+# Andes (Ansible DevOps)
 
-An opiniated Playbook to install Jenkins.
+An opiniated Playbook to install DevOps tools.
 
 ## Requirements
 
@@ -16,7 +16,7 @@ An opiniated Playbook to install Jenkins.
 
 ## Usage
 
-Simply run `ansible-playbook playbook/<playbook>.yaml` to provision and `ansible-playbook playbook/<playbook>.yaml --tags=remove` to remove configuration.
+Simply run `ansible-playbook -i <inventories path> playbook/<playbook>.yaml` to provision and `ansible-playbook -i <inventories path> playbook/<playbook>.yaml --tags=remove` to remove configuration.
 
 ## Misc
 

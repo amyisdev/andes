@@ -10,6 +10,7 @@
       - git
       - gnupg
       - gzip
+      - jq
       - net-tools
       - openssh-client
       - tar

@@ -27,3 +27,47 @@
     - jenkins_agent
     - gitops
     - docker
+
+- name: Add agents to jenkins controller
+  hosts: jenkins-controller
+  become: true
+  vars:
+    jenkins_user: jenkins
+    jenkins_home: /var/lib/jenkins
+  tasks:
+    - name: Ensure agents added to known hosts
+      ansible.builtin.known_hosts:
+        name: "{{ hostvars[item].ansible_host }}"
+        state: present
+        key: "{{ lookup('pipe', 'ssh-keyscan {{ hostvars[item].ansible_host }}') }}"
+        path: "{{ jenkins_home }}/.ssh/known_hosts"
+      with_items: "{{ groups.jenkins_agent }}"
+
+    - name: Ensure the known hosts file permission
+      ansible.builtin.file:
+        path: "{{ jenkins_home }}/.ssh/known_hosts"
+        mode: "0600"
+        owner: "{{ jenkins_user }}"
+        group: "{{ jenkins_user }}"
+        state: file
+
+    - name: Ensure the agent dir on the nodes dir
+      ansible.builtin.file:
+        path: "{{ jenkins_home }}/nodes/{{ item }}"
+        mode: "0755"
+        owner: "{{ jenkins_user }}"
+        group: "{{ jenkins_user }}"
+        state: directory
+      with_items: "{{ groups.jenkins_agent }}"
+
+    - name: Configure the agent node
+      vars:
+        agent_hostname: "{{ item }}"
+        agent_ip: "{{ hostvars[item].ansible_host }}"
+        agent_home: "{{ jenkins_home }}"
+        credential_id: "jenkins-controller-private-key"
+      ansible.builtin.template:
+        src: "jenkins/node-config.xml"
+        dest: "{{ jenkins_home }}/nodes/{{ item }}/config.xml"
+        mode: "0644"
+      with_items: "{{ groups.jenkins_agent }}"

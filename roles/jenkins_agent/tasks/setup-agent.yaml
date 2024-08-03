@@ -35,3 +35,12 @@
   ansible.posix.authorized_key:
     user: "{{ jenkins_agent_user }}"
     key: "{{ jenkins_agent_controller_public_key }}"
+
+- name: Add remoting jar when required
+  ansible.builtin.get_url:
+    url: "{{ jenkins_agent_controller_endpoint }}/jnlpJars/remoting.jar"
+    dest: "{{ jenkins_agent_home }}/remoting.jar"
+    mode: "0755"
+    owner: "{{ jenkins_agent_user }}"
+    group: "{{ jenkins_agent_user }}"
+  when: jenkins_agent_include_remoting

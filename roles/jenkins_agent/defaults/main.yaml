@@ -1,2 +1,5 @@
 jenkins_agent_user: jenkins
 jenkins_agent_home: /var/lib/jenkins
+
+jenkins_agent_include_remoting: false
+jenkins_agent_controller_endpoint: http://jenkins.local

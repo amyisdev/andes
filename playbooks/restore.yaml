@@ -1,0 +1,78 @@
+---
+- name: Restore Jenkins Backup
+  hosts: jenkins-controller
+  become: true
+  vars:
+    jenkins_home: /var/lib/jenkins
+    jenkins_home_backup: "{{ jenkins_home }}.bak"
+    backup_file: ../backup.tar.gz
+    restore_nodes: false
+
+  tasks:
+    - name: Ensure Jenkins service is stopped
+      ansible.builtin.systemd:
+        name: jenkins
+        state: stopped
+
+    - name: Create a backup of the current Jenkins home
+      ansible.builtin.command: mv {{ jenkins_home }} {{ jenkins_home_backup }}
+      args:
+        creates: "{{ jenkins_home_backup }}"
+
+    - name: Ensure Jenkins home directory exists
+      ansible.builtin.file:
+        path: "{{ jenkins_home }}"
+        state: directory
+        owner: jenkins
+        group: jenkins
+        mode: "0755"
+
+    - name: Create a temporary directory for extraction
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: jenkins_restore
+      register: temp_dir
+
+    - name: Extract backup archive to Jenkins home
+      ansible.builtin.unarchive:
+        src: "{{ backup_file }}"
+        dest: "{{ temp_dir.path }}"
+        owner: jenkins
+        group: jenkins
+
+    - name: Copy contents from jenkins-backup folder to Jenkins home
+      ansible.builtin.command: cp -R {{ temp_dir.path }}/jenkins-backup/. {{ jenkins_home }}/
+      args:
+        creates: "{{ jenkins_home }}/config.xml"
+
+    - name: Restore original nodes folder if restore_nodes is false
+      when: not restore_nodes
+      block:
+        - name: Remove restored nodes folder
+          ansible.builtin.file:
+            path: "{{ jenkins_home }}/nodes"
+            state: absent
+
+        - name: Copy original nodes folder back
+          ansible.builtin.command: cp -R {{ jenkins_home_backup }}/nodes {{ jenkins_home }}/nodes
+          args:
+            creates: "{{ jenkins_home }}/nodes"
+
+    - name: Restore original .ssh folder
+      ansible.builtin.copy:
+        src: "{{ jenkins_home_backup }}/.ssh"
+        dest: "{{ jenkins_home }}"
+        remote_src: true
+        mode: "0700"
+
+    - name: Ensure correct permissions on Jenkins home
+      ansible.builtin.file:
+        path: "{{ jenkins_home }}"
+        owner: jenkins
+        group: jenkins
+        recurse: true
+
+    - name: Clean up temporary directory
+      ansible.builtin.file:
+        path: "{{ temp_dir.path }}"
+        state: absent

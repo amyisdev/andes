@@ -1,0 +1,35 @@
+---
+- name: Backup Jenkins Instance
+  hosts: jenkins-controller
+  become: true # Use sudo to run commands
+  vars:
+    jenkins_home: "/var/lib/jenkins"
+    backup_filename: "jenkins_backup_{{ ansible_date_time.date }}.tar.gz"
+    remote_temp_dir: "/tmp"
+
+  tasks:
+    - name: Copy backup script to remote server
+      ansible.builtin.copy:
+        src: ../backup-jenkins.sh
+        dest: "{{ remote_temp_dir }}/backup-jenkins.sh"
+        mode: "0755"
+
+    - name: Run backup script
+      ansible.builtin.command: "{{ remote_temp_dir }}/backup-jenkins.sh {{ jenkins_home }} {{ remote_temp_dir }}/{{ backup_filename }}"
+      register: backup_result
+      changed_when: false
+
+    - name: Display backup script output
+      ansible.builtin.debug:
+        var: backup_result.stdout_lines
+
+    - name: Clean up remote backup script
+      ansible.builtin.file:
+        path: "{{ remote_temp_dir }}/backup-jenkins.sh"
+        state: absent
+
+    - name: Backup complete
+      ansible.builtin.debug:
+        msg: >-
+          Jenkins backup completed successfully.
+          Use `scp jenkins-controller:{{ remote_temp_dir }}/{{ backup_filename }} ./backup.tar.gz` to retrieve the file.

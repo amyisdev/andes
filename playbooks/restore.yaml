@@ -9,6 +9,18 @@
     restore_nodes: false
 
   tasks:
+    - name: Check if backup file exists
+      ansible.builtin.stat:
+        path: "{{ backup_file }}"
+      register: backup_stat
+      delegate_to: localhost
+      become: false
+
+    - name: Fail if backup file does not exist
+      ansible.builtin.fail:
+        msg: "Backup file {{ backup_file }} does not exist"
+      when: not backup_stat.stat.exists
+
     - name: Ensure Jenkins service is stopped
       ansible.builtin.systemd:
         name: jenkins

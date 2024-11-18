@@ -1,0 +1,16 @@
+vault_group: vault
+vault_user: vault
+vault_user_shell: /bin/false
+
+vault_version: 1.18.1
+vault_download_path: "/tmp/vault-{{ vault_version }}"
+
+vault_db_host: ""
+vault_db_user: ""
+vault_db_pass: ""
+vault_db_name: ""
+
+vault_unseal_keys: ""
+
+vault_force_install: false
+vault_upgrade: false

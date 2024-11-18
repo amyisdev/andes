@@ -1,0 +1,24 @@
+disable_cache = true
+disable_mlock = false
+ui = true
+disable_sealwrap = true
+disable_printable_check = true
+
+listener "tcp" {
+   address = "0.0.0.0:8200"
+   tls_disable = 1
+}
+
+api_addr = "http://{{ ansible_default_ipv4.address }}:8200"
+
+max_lease_ttl = "10h"
+default_lease_ttl = "10h"
+cluster_name = "vault"
+
+storage "mysql" {
+  ha_enabled = "true"
+  address = "{{ vault_db_host }}"
+  username = "{{ vault_db_user }}"
+  password = "{{ vault_db_pass }}"
+  database = "{{ vault_db_name }}"
+}

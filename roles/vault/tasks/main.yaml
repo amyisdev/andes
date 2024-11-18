@@ -1,0 +1,13 @@
+---
+- name: Gather info of Vault installation
+  ansible.builtin.stat:
+    path: "/usr/bin/vault"
+  register: vault_exists
+
+- name: Install Vault
+  ansible.builtin.include_tasks: install.yaml
+  when: vault_exists.stat.exists and vault_force_install
+
+- name: Upgrade Vault
+  ansible.builtin.include_tasks: upgrade.yaml
+  when: vault_exists.stat.exists and vault_upgrade

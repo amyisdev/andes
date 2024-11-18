@@ -1,0 +1,49 @@
+---
+- name: Create Vault download directory
+  ansible.builtin.file:
+    path: "{{ vault_download_path }}"
+    state: directory
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: "0755"
+
+- name: Download Vault binary
+  ansible.builtin.unarchive:
+    src: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip"
+    dest: "{{ vault_download_path }}"
+    creates: "{{ vault_download_path }}/vault"
+    owner: root
+    group: root
+    mode: "0644"
+    remote_src: true
+
+- name: Create Vault binary backup
+  ansible.builtin.copy:
+    src: /usr/bin/vault
+    dest: /usr/bin/vault.old
+    owner: root
+    group: root
+    mode: "0755"
+    remote_src: true
+
+- name: Copy Vault binary
+  ansible.builtin.copy:
+    src: "{{ vault_download_path }}/vault"
+    dest: /usr/bin/vault
+    owner: root
+    group: root
+    mode: "0755"
+    remote_src: true
+  notify:
+    - Restart vault
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Unseal Vault
+  ansible.builtin.command: /usr/bin/vault operator unseal "{{ item }}"
+  environment:
+    VAULT_ADDR: "http://localhost:8200"
+  with_items: "{{ vault_unseal_keys }}"
+  when: vault_unseal_keys | length > 0
+  changed_when: true

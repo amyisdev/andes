@@ -1,0 +1,12 @@
+---
+- name: Setup Vault
+  hosts: vault-2
+  become: true
+  vars:
+    vault_db_host: ""
+    vault_db_user: ""
+    vault_db_pass: ""
+    vault_db_name: ""
+  roles:
+    - common
+    - vault
